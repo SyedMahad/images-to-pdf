@@ -26,21 +26,10 @@ pip install -r requirements.txt
 ```
 
 ## Usage
-1. Place all the images you want to convert into the same directory as the script.
-1. Run the script:
-    ```bash
-    python images_to_pdf.py
-    ```
-1. The script will generate `output.pdf` in the same directory. If the file size exceeds 10 MB, it will automatically compress the PDF
-
-## Converting to an Executable
-![pyinstaller](https://img.shields.io/badge/pyinstaller-6.10.0-orange.svg)  
-To create a standalone `.exe` file, use `PyInstaller`:
-```bash
-pip install pyinstaller
-pyinstaller --onefile images_to_pdf.py
-```
-The `.exe` file will be located in the `dist` folder.
+1. Download the [executable (.exe)](https://github.com/SyedMahad/images-to-pdf/releases/download/v1.0.0/image_to_pdf.exe) file from the [lastest releases](https://github.com/SyedMahad/images-to-pdf/releases/).
+1. Place all the images you want to convert into the same directory as the [images_to_pdf.exe](https://github.com/SyedMahad/images-to-pdf/releases/download/v1.0.0/image_to_pdf.exe).
+1. Execute the [images_to_pdf.exe](https://github.com/SyedMahad/images-to-pdf/releases/download/v1.0.0/image_to_pdf.exe).
+1. The script will generate `output.pdf` in the same directory. If the file size exceeds 10 MB, it will automatically compress the PDF.
 
 ## Contributing
 Contributions are welcome! Feel free to submit a pull request or open an issue to discuss changes.
