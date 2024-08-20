@@ -46,5 +46,4 @@ The `.exe` file will be located in the `dist` folder.
 Contributions are welcome! Feel free to submit a pull request or open an issue to discuss changes.
 
 ## Contact
-For any questions or suggestions, please feel free to contact the repository owner
-
+For any questions or suggestions, please open an issue in the repository.
