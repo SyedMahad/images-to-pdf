@@ -187,6 +187,31 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
+def show_help():
+    """ Display help documentation """
+    help_text = (
+        "How to Use Image to PDF Converter:\n\n"
+        "1. Click 'Select Images' to choose the image files you want to convert.\n"
+        "2. Select the location to save the PDF using the 'Save Location' button.\n"
+        "3. Enter a file name for the output PDF in the 'File Name' field.\n"
+        "4. (Optional) Check the 'Zip the PDF file after conversion' option if you want the PDF file to be compressed and zipped.\n"
+        "5. Click 'Convert' to start the conversion process. The progress bar will show the conversion progress.\n"
+        "6. Once completed, a success message will be displayed with the location of the generated PDF or ZIP file.\n\n"
+        "For more information, visit the official documentation or contact support."
+    )
+    messagebox.showinfo("Help - Image to PDF Converter", help_text)
+
+def show_about():
+    """ Display information about the application """
+    about_text = (
+        "Image to PDF Converter\n"
+        "Version 2.1.0\n\n"
+        "Developed by Syed Mahad Ehsan.\n"
+        "This application allows you to convert images to PDF files with optional compression and zipping functionality.\n\n"
+        "For more information, visit https://github.com/SyedMahad/images-to-pdf."
+    )
+    messagebox.showinfo("About - Image to PDF Converter", about_text)
+
 def create_gui():
     """
     Creates the main GUI window and its widgets for the image to PDF converter.
@@ -197,13 +222,26 @@ def create_gui():
     root.title("Image to PDF Converter")
 
     # Set the window icon
-    # root.iconbitmap("logo.ico")
-
-    # Set the window icon for both the window and the taskbar
-    # Use the resource_path function to locate the image file
     logo_image_path = resource_path("logo.png")
     logo_image = tk.PhotoImage(file=logo_image_path)
     root.iconphoto(True, logo_image)
+
+    # Create menu bar
+    menu_bar = tk.Menu(root)
+
+    # File menu
+    file_menu = tk.Menu(menu_bar, tearoff=0)
+    file_menu.add_command(label="Exit", command=root.destroy)
+    menu_bar.add_cascade(label="File", menu=file_menu)
+
+    # Help menu
+    help_menu = tk.Menu(menu_bar, tearoff=0)
+    help_menu.add_command(label="Help", command=show_help)
+    help_menu.add_command(label="About", command=show_about)
+    menu_bar.add_cascade(label="Help", menu=help_menu)
+
+    # Add menu bar to the window
+    root.config(menu=menu_bar)
 
     # Calculate the center position of the window
     window_width = 430  # Width of the main window
@@ -229,16 +267,6 @@ def create_gui():
 
     frame = tk.Frame(root)
     frame.pack(padx=5, pady=5)
-
-    # # Load the logo image
-    # logo_image = Image.open(logo_image_path)
-    # logo_image = logo_image.resize((100, 100), Image.Resampling.LANCZOS)  # Resize as needed
-    # logo_photo = ImageTk.PhotoImage(logo_image)
-
-    # # Add the logo to the GUI
-    # logo_label = tk.Label(frame, image=logo_photo)
-    # logo_label.image = logo_photo  # Keep a reference to avoid garbage collection
-    # logo_label.grid(row=0, column=0, columnspan=2, pady=10)
 
     # Button to select images
     select_images_button = tk.Button(frame, text="Select Images", command=open_files,
