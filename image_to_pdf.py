@@ -8,6 +8,7 @@ import PyPDF2
 import zipfile
 import tempfile
 
+
 def images_to_pdf(output_pdf, images, progress_var):
     """
     Converts a list of images to a PDF file.
@@ -17,6 +18,7 @@ def images_to_pdf(output_pdf, images, progress_var):
     images (list): List of image file paths to be converted.
     progress_var (tk.IntVar): Variable to update the progress bar.
     """
+    progress_var.set(0)
     if not images:
         messagebox.showinfo("No Images", "No images selected.")
         return
@@ -126,81 +128,146 @@ def convert_files(zip_option, progress_var):
     images_to_pdf(pdf_path, image_files, progress_var)
 
     if os.path.exists(pdf_path):
+        # Compress if the file size is larger than 10MB
         if os.path.getsize(pdf_path) > 10 * 1024 * 1024:
             compressed_pdf = pdf_path.replace(".pdf", "_compressed.pdf")
             compress_pdf(pdf_path, compressed_pdf)
             os.remove(pdf_path)
             pdf_path = compressed_pdf
 
+        # Zip the PDF if the option is selected
         if zip_option.get():
             zip_pdf(pdf_path, output_file_path, pdf_name_in_zip)
             os.remove(pdf_path)
-            messagebox.showinfo("Success", f"PDF zipped: {output_file_path}")
+            messagebox.showinfo("Success", f"PDF zipped to location: {output_file_path}")
         else:
-            messagebox.showinfo("Success", f"PDF generated: {output_file_path}")
+            messagebox.showinfo("Success", f"PDF generated to location: {output_file_path}")
 
+    # Reset the progress bar
     progress_var.set(0)
+
+def on_enter_button_convert(e):
+    """Changes the background and text color when hovering over the Convert button."""
+    e.widget['bg'] = '#76c893'  # Light Green
+    e.widget['fg'] = 'black'
+
+def on_leave_button_convert(e):
+    """Resets the background and text color when leaving the Convert button."""
+    e.widget['bg'] = 'green'  # Green
+    e.widget['fg'] = 'white'
+
+def on_enter_button_close(e):
+    """Changes the background and text color when hovering over the Close button."""
+    e.widget['bg'] = '#fa8072'  # Light Coral
+    e.widget['fg'] = 'black'
+
+def on_leave_button_close(e):
+    """Resets the background and text color when leaving the Close button."""
+    e.widget['bg'] = 'red'  # Firebrick (Red)
+    e.widget['fg'] = 'white'
+
+def on_enter_button(e):
+    """Changes the background and text color when hovering over general buttons."""
+    e.widget['bg'] = '#add8e6'  # Light Blue
+    e.widget['fg'] = 'black'
+
+def on_leave_button(e):
+    """Resets the background and text color when leaving general buttons."""
+    e.widget['bg'] = 'blue'  # Steel Blue
+    e.widget['fg'] = 'white'
 
 def create_gui():
     """
-    Creates the main GUI for the Image to PDF Converter application.
+    Creates the main GUI window and its widgets for the image to PDF converter.
     """
     global root, file_list, save_path, file_name, image_files
 
     root = tk.Tk()
     root.title("Image to PDF Converter")
 
+    # Calculate the center position of the window
+    window_width = 430  # Width of the main window
+    window_height = 330  # Height of the main window
+
+    # Get the screen width and height
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+
+    # Calculate the x and y coordinates to center the window
+    x_cordinate = int((screen_width / 2) - (window_width / 2))
+    y_cordinate = int((screen_height / 2) - (window_height / 2))
+
+    # Set the geometry of the window to center it on the screen
+    root.geometry(f"{window_width}x{window_height}+{x_cordinate}+{y_cordinate}")
+
+    # Ensure the window resizes according to the frame size
+    root.pack_propagate(False)
+
     image_files = []
 
-    # Set default save location to desktop or home directory
-    default_save_location = os.path.expanduser("~/Documents")
+    default_save_location = os.path.expanduser("~\\Documents")
 
     frame = tk.Frame(root)
-    frame.pack(padx=10, pady=10)
+    frame.pack(padx=5, pady=5)
 
-    # Open Button
-    open_button = tk.Button(frame, text="Open", command=open_files)
-    open_button.grid(row=0, column=0, padx=5, pady=5)
+    # Button to select images
+    select_images_button = tk.Button(frame, text="Select Images", command=open_files,
+                                     bg="blue", fg="white")
+    select_images_button.grid(row=0, column=0, padx=5, pady=5)
 
-    # Listbox to display selected files
+    # Listbox to display selected images
     file_list = tk.Listbox(frame, height=5, width=50)
     file_list.grid(row=0, column=1, padx=5, pady=5)
 
-    # Save Location Button
-    save_path = tk.StringVar(value=default_save_location)  # Set default save location here
-    save_location_button = tk.Button(frame, text="Save Location", command=select_save_location)
+    # Button to select save location
+    save_path = tk.StringVar(value=default_save_location)
+    save_location_button = tk.Button(frame, text="Save Location", command=select_save_location,
+                                     bg="blue", fg="white")
     save_location_button.grid(row=2, column=0, padx=5, pady=5)
 
-    # Entry to display save location
+    # Entry to display selected save location
     save_location_entry = tk.Entry(frame, textvariable=save_path, width=50)
     save_location_entry.grid(row=2, column=1, padx=5, pady=5)
 
-    # File Name Entry
+    # Entry for the file name
     file_name = tk.StringVar()
     file_name_label = tk.Label(frame, text="File Name:")
     file_name_label.grid(row=3, column=0, padx=5, pady=5)
     file_name_entry = tk.Entry(frame, textvariable=file_name, width=50)
     file_name_entry.grid(row=3, column=1, padx=5, pady=5)
 
-    # Zip Checkbox
+    # Checkbox for zip option
     zip_option = tk.BooleanVar()
     zip_checkbox = tk.Checkbutton(frame, text="Zip the PDF file after conversion", variable=zip_option)
     zip_checkbox.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
 
-    # Progress Bar
+    # Progress bar
     progress_var = tk.IntVar()
     progress_bar = ttk.Progressbar(frame, orient="horizontal", length=400, mode="determinate", variable=progress_var)
     progress_bar.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
 
-    # Convert Button
-    convert_button = tk.Button(frame, text="Convert", command=lambda: convert_files(zip_option, progress_var))
-    convert_button.grid(row=6, column=0, padx=5, pady=10)
+    # Button to start the conversion
+    convert_button = tk.Button(frame, text="Convert", command=lambda: convert_files(zip_option, progress_var),
+                               bg="green", fg="white", width=55)
+    convert_button.grid(row=6, column=0, columnspan=3, padx=5, pady=10)
 
-    # Close Button
-    close_button = tk.Button(frame, text="Close", command=root.destroy)
-    close_button.grid(row=10, column=2, columnspan=2, padx=5, pady=50)
+    # Button to close the application
+    close_button = tk.Button(frame, text="Close", command=root.destroy,
+                             width=10, bg="red", fg="white")
+    close_button.grid(row=7, column=0, columnspan=3, padx=5, pady=10)
+
+    # Add hover effects
+    select_images_button.bind("<Enter>", on_enter_button)
+    select_images_button.bind("<Leave>", on_leave_button)
+    save_location_button.bind("<Enter>", on_enter_button)
+    save_location_button.bind("<Leave>", on_leave_button)
+    convert_button.bind("<Enter>", on_enter_button_convert)
+    convert_button.bind("<Leave>", on_leave_button_convert)
+    close_button.bind("<Enter>", on_enter_button_close)
+    close_button.bind("<Leave>", on_leave_button_close)
 
     root.mainloop()
+
 
 if __name__ == "__main__":
     create_gui()
