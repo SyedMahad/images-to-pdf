@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
-from PIL import Image
+from PIL import Image, ImageTk
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 import os
+import sys
 import PyPDF2
 import zipfile
 import tempfile
@@ -176,6 +177,16 @@ def on_leave_button(e):
     e.widget['bg'] = 'blue'  # Steel Blue
     e.widget['fg'] = 'white'
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 def create_gui():
     """
     Creates the main GUI window and its widgets for the image to PDF converter.
@@ -184,6 +195,15 @@ def create_gui():
 
     root = tk.Tk()
     root.title("Image to PDF Converter")
+
+    # Set the window icon
+    # root.iconbitmap("logo.ico")
+
+    # Set the window icon for both the window and the taskbar
+    # Use the resource_path function to locate the image file
+    logo_image_path = resource_path("logo.png")
+    logo_image = tk.PhotoImage(file=logo_image_path)
+    root.iconphoto(True, logo_image)
 
     # Calculate the center position of the window
     window_width = 430  # Width of the main window
@@ -210,14 +230,24 @@ def create_gui():
     frame = tk.Frame(root)
     frame.pack(padx=5, pady=5)
 
+    # # Load the logo image
+    # logo_image = Image.open(logo_image_path)
+    # logo_image = logo_image.resize((100, 100), Image.Resampling.LANCZOS)  # Resize as needed
+    # logo_photo = ImageTk.PhotoImage(logo_image)
+
+    # # Add the logo to the GUI
+    # logo_label = tk.Label(frame, image=logo_photo)
+    # logo_label.image = logo_photo  # Keep a reference to avoid garbage collection
+    # logo_label.grid(row=0, column=0, columnspan=2, pady=10)
+
     # Button to select images
     select_images_button = tk.Button(frame, text="Select Images", command=open_files,
                                      bg="blue", fg="white")
-    select_images_button.grid(row=0, column=0, padx=5, pady=5)
+    select_images_button.grid(row=1, column=0, padx=5, pady=5)
 
     # Listbox to display selected images
     file_list = tk.Listbox(frame, height=5, width=50)
-    file_list.grid(row=0, column=1, padx=5, pady=5)
+    file_list.grid(row=1, column=1, padx=5, pady=5)
 
     # Button to select save location
     save_path = tk.StringVar(value=default_save_location)
