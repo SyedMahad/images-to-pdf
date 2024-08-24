@@ -96,7 +96,7 @@ def select_save_location():
     if folder_path:
         save_path.set(folder_path)
 
-def convert_files(zip_option, progress_var):
+def convert_files(zip_option, progress_var, compression_threshold):
     """
     Converts selected images to a PDF, optionally compresses the PDF, and zips it if specified.
 
@@ -129,8 +129,8 @@ def convert_files(zip_option, progress_var):
     images_to_pdf(pdf_path, image_files, progress_var)
 
     if os.path.exists(pdf_path):
-        # Compress if the file size is larger than 10MB
-        if os.path.getsize(pdf_path) > 10 * 1024 * 1024:
+        # Compress if the file size is larger than the compression threshold
+        if os.path.getsize(pdf_path) > compression_threshold.get() * 1024 * 1024:
             compressed_pdf = pdf_path.replace(".pdf", "_compressed.pdf")
             compress_pdf(pdf_path, compressed_pdf)
             os.remove(pdf_path)
@@ -212,6 +212,38 @@ def show_about():
     )
     messagebox.showinfo("About - Image to PDF Converter", about_text)
 
+def open_settings(compression_threshold):
+    """
+    Opens a settings window to adjust application settings.
+    """
+    settings_window = tk.Toplevel(root)
+    settings_window.title("Settings")
+
+    # # Get the screen width and height
+    # screen_width = root.winfo_screenwidth()
+    # screen_height = root.winfo_screenheight()
+
+    # # Calculate the x and y coordinates to center the window
+    # x_cordinate = int(screen_width / 2)
+    # y_cordinate = int(screen_height / 2)
+
+    # # Set the geometry of the window to center it on the screen
+    # root.geometry(f"{x_cordinate}+{y_cordinate}")
+
+    tk.Label(settings_window, text="Compression Threshold (MB):").grid(row=0, column=0, padx=5, pady=5)
+    threshold_entry = tk.Entry(settings_window, textvariable=compression_threshold)
+    threshold_entry.grid(row=0, column=1, padx=5, pady=5)
+
+    tk.Button(
+        settings_window, text="Save", command=settings_window.destroy, bg="blue", fg="white"
+    ).grid(
+        row=1, column=0, columnspan=2, pady=10
+    ).bind(
+        "<Enter>", on_enter_button
+    ).bind(
+        "<Leave>", on_leave_button
+    )
+
 def create_gui():
     """
     Creates the main GUI window and its widgets for the image to PDF converter.
@@ -220,6 +252,9 @@ def create_gui():
 
     root = tk.Tk()
     root.title("Image to PDF Converter")
+    
+    # Initialize compression threshold
+    compression_threshold = tk.DoubleVar(value=10)  # Default is 10 MB
 
     # Set the window icon
     logo_image_path = resource_path("logo.png")
@@ -231,6 +266,7 @@ def create_gui():
 
     # File menu
     file_menu = tk.Menu(menu_bar, tearoff=0)
+    file_menu.add_command(label="Settings", command=lambda: open_settings(compression_threshold))
     file_menu.add_command(label="Exit", command=root.destroy)
     menu_bar.add_cascade(label="File", menu=file_menu)
 
@@ -244,8 +280,8 @@ def create_gui():
     root.config(menu=menu_bar)
 
     # Calculate the center position of the window
-    window_width = 430  # Width of the main window
-    window_height = 330  # Height of the main window
+    window_width = 500  # Width of the main window
+    window_height = 400  # Height of the main window
 
     # Get the screen width and height
     screen_width = root.winfo_screenwidth()
@@ -305,7 +341,7 @@ def create_gui():
     progress_bar.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
 
     # Button to start the conversion
-    convert_button = tk.Button(frame, text="Convert", command=lambda: convert_files(zip_option, progress_var),
+    convert_button = tk.Button(frame, text="Convert", command=lambda: convert_files(zip_option, progress_var, compression_threshold),
                                bg="green", fg="white", width=55)
     convert_button.grid(row=6, column=0, columnspan=3, padx=5, pady=10)
 
