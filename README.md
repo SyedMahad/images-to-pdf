@@ -4,6 +4,12 @@
 
 **Image to PDF Converter** is a simple and efficient desktop application built with Python and Tkinter that allows you to convert a list of image files into a single PDF document. It also provides optional features like compressing the PDF and zipping the final output.
 
+## Screenshots
+
+Here’s how the app looks:
+
+![App Screenshot](images/image-04.jpeg)
+
 ## Features
 
 - **Convert Images to PDF:** Select multiple image files (JPG, PNG, BMP, GIF, etc.) and convert them into a single PDF document.
